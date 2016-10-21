@@ -11,11 +11,20 @@ func NewDepositOperation(receiver *Address, amount int64, symbol string) *Deposi
 	return depositOp
 }
 
-func (depositOperation *DepositOperation) Bytes() ([]byte, error) {
+func (depositOperation *DepositOperation) Encode() ([]byte, error) {
 
 	data, err := proto.Marshal(depositOperation)
 	if err != nil {
-		return nil, errors.New("unable to marshal the deposit operation")
+		return nil, errors.New("unable to encode the deposit operation")
 	}
 	return data, nil
+}
+
+func (depositOperation *DepositOperation) Decode(data []byte) error {
+
+	err := proto.Unmarshal(data, depositOperation)
+	if err != nil {
+		return errors.New("unable to decode the deposit operation")
+	}
+	return nil
 }

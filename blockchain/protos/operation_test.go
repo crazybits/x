@@ -1,24 +1,19 @@
 package protos
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
-
-	proto "github.com/golang/protobuf/proto"
 )
 
 func TestDepositOperationMarshAndUnmarsh(t *testing.T) {
 
-	receiver := StringToAddress("crazybit")
+	depositOp := &DepositOperation{}
 
-	symbol := "Symbol"
+	depositOp.Receiver = StringToAddress("craybit")
+	depositOp.Amount = int64(100000)
+	depositOp.Symbol = "x"
 
-	amount := int64(1024)
-
-	depositOp := NewDepositOperation(receiver, amount, symbol)
-
-	data, err := depositOp.Bytes()
+	data, err := depositOp.Encode()
 
 	if err != nil {
 		t.Fail()
@@ -26,13 +21,11 @@ func TestDepositOperationMarshAndUnmarsh(t *testing.T) {
 
 	depositOp2 := &DepositOperation{}
 
-	err2 := proto.Unmarshal(data, depositOp2)
+	err2 := depositOp2.Decode(data)
 	if err2 != nil {
 		t.Fail()
 	}
 
-	fmt.Println(depositOp)
-	fmt.Println(depositOp2)
 	if !reflect.DeepEqual(depositOp, depositOp2) {
 		t.Fail()
 
@@ -42,15 +35,13 @@ func TestDepositOperationMarshAndUnmarsh(t *testing.T) {
 
 func TestOperation(t *testing.T) {
 
-	receiver := StringToAddress("crazybit")
+	depositOp := &DepositOperation{}
 
-	symbol := "Symbol"
+	depositOp.Receiver = StringToAddress("craybit")
+	depositOp.Amount = int64(100000)
+	depositOp.Symbol = "x"
 
-	amount := int64(1024)
-
-	depositOp := NewDepositOperation(receiver, amount, symbol)
-
-	data, err := depositOp.Bytes()
+	data, err := depositOp.Encode()
 
 	if err != nil {
 		t.Fail()
@@ -58,7 +49,7 @@ func TestOperation(t *testing.T) {
 
 	operation := NewOperation(OperationType_Deposit, data)
 
-	data2, err2 := operation.Bytes()
+	data2, err2 := operation.Encode()
 
 	if err2 != nil {
 		t.Fail()
@@ -66,57 +57,61 @@ func TestOperation(t *testing.T) {
 
 	operation2 := &Operation{}
 
-	proto.Unmarshal(data2, operation2)
+	operation2.Decode(data2)
 
 	depositOp2 := &DepositOperation{}
 
-	proto.Unmarshal(operation.Payload, depositOp2)
+	depositOp2.Decode(operation2.Payload)
 
-	fmt.Println(depositOp)
-	fmt.Println(depositOp2)
+	if !reflect.DeepEqual(operation, operation2) {
+		t.Fail()
+	}
 
 	if !reflect.DeepEqual(depositOp, depositOp2) {
 		t.Fail()
-
 	}
 
 }
 
 func TestTrnasctionMarshalAndUnmarsh(t *testing.T) {
 
-	receiver := StringToAddress("crazybit")
+	depositOp := &DepositOperation{}
 
-	withdrawSymbol := "Symbol"
+	depositOp.Receiver = StringToAddress("craybit")
+	depositOp.Amount = int64(100000)
+	depositOp.Symbol = "x"
 
-	withdrawAmount := int64(1024)
+	depositPayload, err := depositOp.Encode()
 
-	depositOp := NewDepositOperation(receiver, withdrawAmount, withdrawSymbol)
+	if err != nil {
+		t.Fail()
+	}
 
-	depositOpData, _ := depositOp.Bytes()
+	withdrawOp := &WithdrawOperation{}
 
-	sender := StringToAddress("crazybit2")
+	withdrawOp.Sender = StringToAddress("craybit")
+	withdrawOp.Amount = int64(100000)
+	withdrawOp.Symbol = "x"
 
-	symbol := "Symbol"
+	withdrawPayload, err := withdrawOp.Encode()
 
-	amount := int64(1024)
+	if err != nil {
+		t.Fail()
+	}
 
-	withdrawOp := NewWithdrawOperation(sender, amount, symbol)
-
-	withdrawOpData, _ := withdrawOp.Bytes()
-
-	operation1 := &Operation{OpType: OperationType_Deposit, Payload: depositOpData}
-	operation2 := &Operation{OpType: OperationType_Withdraw, Payload: withdrawOpData}
+	operation1 := &Operation{OpType: OperationType_Deposit, Payload: depositPayload}
+	operation2 := &Operation{OpType: OperationType_Withdraw, Payload: withdrawPayload}
 
 	transaction := &Transaction{}
 
 	transaction.AddOperation(operation1)
 	transaction.AddOperation(operation2)
 
-	data, _ := transaction.Bytes()
+	data, _ := transaction.Encode()
 
 	transaction2 := &Transaction{}
 
-	proto.Unmarshal(data, transaction2)
+	transaction2.Decode(data)
 
 	for _, v := range transaction2.Operations {
 
@@ -125,18 +120,16 @@ func TestTrnasctionMarshalAndUnmarsh(t *testing.T) {
 		case OperationType_Deposit:
 
 			depositOp2 := &DepositOperation{}
-			proto.Unmarshal(v.Payload, depositOp2)
-			fmt.Println(depositOp)
-			fmt.Println(depositOp2)
+			depositOp2.Decode(v.Payload)
 
 			if !reflect.DeepEqual(depositOp, depositOp2) {
 				t.Fail()
 			}
 		case OperationType_Withdraw:
+
 			withdrawOp2 := &WithdrawOperation{}
-			proto.Unmarshal(v.Payload, withdrawOp2)
-			fmt.Println(withdrawOp)
-			fmt.Println(withdrawOp2)
+			withdrawOp2.Decode(v.Payload)
+
 			if !reflect.DeepEqual(withdrawOp, withdrawOp2) {
 				t.Fail()
 			}
@@ -144,4 +137,26 @@ func TestTrnasctionMarshalAndUnmarsh(t *testing.T) {
 		}
 	}
 
+}
+
+func TestOperations(t *testing.T) {
+	op1 := &DepositOperation{}
+
+	op1.Receiver = StringToAddress("crazybit")
+	op1.Amount = int64(1000000)
+	op1.Symbol = "x"
+
+	data, err := op1.Encode()
+
+	if err != nil {
+		t.Fail()
+	}
+
+	op2 := &DepositOperation{}
+
+	op2.Decode(data)
+
+	if !reflect.DeepEqual(op1, op2) {
+
+	}
 }

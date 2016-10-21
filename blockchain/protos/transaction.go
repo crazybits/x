@@ -14,18 +14,6 @@ func NewTransaction(operations []*Operation, signatures []*Signature) *Transacti
 
 }
 
-func (transaction *Transaction) Bytes() ([]byte, error) {
-
-	data, err := proto.Marshal(transaction)
-
-	if err != nil {
-
-		return nil, errors.New("unable to marshal the transaction")
-	}
-
-	return data, nil
-}
-
 func (transaction *Transaction) AddOperation(operation *Operation) {
 
 	operations := transaction.GetOperations()
@@ -41,4 +29,28 @@ func (transaction *Transaction) Validate() bool {
 	}
 	return true
 
+}
+
+func (transaction *Transaction) Encode() ([]byte, error) {
+
+	data, err := proto.Marshal(transaction)
+
+	if err != nil {
+
+		return nil, errors.New("unable to marshal the transaction")
+	}
+
+	return data, nil
+}
+
+func (transaction *Transaction) Decode(data []byte) error {
+
+	err := proto.Unmarshal(data, transaction)
+
+	if err != nil {
+
+		return errors.New("unable to marshal the transaction")
+	}
+
+	return nil
 }
