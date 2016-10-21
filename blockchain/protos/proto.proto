@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package protos;
+
+import "google/protobuf/timestamp.proto";
+
+
+message Block{
+
+	BlockHeader header=1;
+	repeated Transaction transactions=2;
+
+}
+
+message BlockHeader{
+
+
+	google.protobuf.Timestamp time=1;
+	int64 number=2;
+	bytes nance=3;
+	bytes prevHash=4;
+	bytes currHash=5;
+	Signature signature=6;
+}
+
+message Transaction{
+
+	repeated Operation operations=1;
+
+	repeated Signature signatures=2;
+}
+
+enum OperationType{
+	
+	Deposit=0;
+	Withdraw=1;
+}
+
+message Operation{
+
+	OperationType opType=1;
+
+	bytes payload=2;
+
+}
+
+
+message DepositOperation{
+	
+	Address receiver=1;
+	int64 amount=2;
+	string symbol=3;
+}
+
+message WithdrawOperation{
+	
+	Address sender=1;
+	int64 amount=2;
+	string symbol=3;
+}
+
+
+message Address{
+	
+	bytes addressByte=1;
+}
+
+enum CryptoType{
+	
+	ECDSA=0;
+	RSA=1;
+	DSA=2;
+}
+message PublicKey{
+	
+	CryptoType type=1;
+
+	bytes key=2;
+}
+
+message Privatekey{
+	
+	CryptoType type=1;
+
+	bytes key=2;
+}
+
+message Signature{
+	
+	CryptoType type=1;
+	bytes r=2;
+	bytes s=3;
+
+}
+
+
