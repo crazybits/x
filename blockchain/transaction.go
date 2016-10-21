@@ -24,6 +24,7 @@ func (transaction *Transaction) Validate() bool {
 
 	for _, v := range transaction.Operations {
 
+		//TODO implement validation logic
 		fmt.Println(v)
 
 	}

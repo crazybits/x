@@ -1,19 +1,18 @@
 syntax = "proto3";
 
-package protos;
+package blockchain;
 
 import "google/protobuf/timestamp.proto";
+import "github.com/crazybits/x/crypto";
 
 
 message Block{
 
 	BlockHeader header=1;
 	repeated Transaction transactions=2;
-
 }
 
 message BlockHeader{
-
 
 	google.protobuf.Timestamp time=1;
 	int64 number=2;
@@ -26,7 +25,6 @@ message BlockHeader{
 message Transaction{
 
 	repeated Operation operations=1;
-
 	repeated Signature signatures=2;
 }
 
@@ -39,7 +37,6 @@ enum OperationType{
 message Operation{
 
 	OperationType opType=1;
-
 	bytes payload=2;
 
 }
@@ -65,32 +62,6 @@ message Address{
 	bytes addressByte=1;
 }
 
-enum CryptoType{
-	
-	ECDSA=0;
-	RSA=1;
-	DSA=2;
-}
-message PublicKey{
-	
-	CryptoType type=1;
 
-	bytes key=2;
-}
-
-message Privatekey{
-	
-	CryptoType type=1;
-
-	bytes key=2;
-}
-
-message Signature{
-	
-	CryptoType type=1;
-	bytes r=2;
-	bytes s=3;
-
-}
 
 

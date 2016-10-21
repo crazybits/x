@@ -1,9 +1,5 @@
 package blockchain
 
-import (
-	pb "github.com/crazybits/x/blockchain/protos"
-)
-
 type BlockManager struct {
 }
 
@@ -11,7 +7,7 @@ func NewBlockManager() *BlockManager {
 	bm := BlockManager{}
 	return &bm
 }
-func (bm *BlockManager) ProcessBlock(block *pb.Block) error {
+func (bm *BlockManager) ProcessBlock(block *Block) error {
 
 	txCount := len(block.Transactions)
 	lockChan := make(chan bool, txCount)
@@ -27,7 +23,7 @@ func (bm *BlockManager) ProcessBlock(block *pb.Block) error {
 
 }
 
-func (bm *BlockManager) ProccessTransaction(tx *pb.Transaction, lockChan chan bool) {
+func (bm *BlockManager) ProccessTransaction(tx *Transaction, lockChan chan bool) {
 
 	tx.Validate()
 

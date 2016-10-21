@@ -1,7 +1,6 @@
 package blockchain
 
 import "testing"
-import . "github.com/crazybits/x/blockchain/protos"
 
 func TestBlock(t *testing.T) {
 
@@ -13,7 +12,7 @@ func TestBlock(t *testing.T) {
 
 	depositOp := NewDepositOperation(receiver, withdrawAmount, withdrawSymbol)
 
-	data, _ := depositOp.Bytes()
+	data, _ := depositOp.Encode()
 
 	operation := &Operation{OpType: OperationType_Deposit, Payload: data}
 

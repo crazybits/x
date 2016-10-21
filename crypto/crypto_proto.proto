@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package crypto;
+
+enum CryptoType{
+	
+	ECDSA=0;
+	RSA=1;
+	DSA=2;
+}
+message PublicKey{
+	
+	CryptoType type=1;
+
+	bytes key=2;
+}
+
+message Privatekey{
+	
+	CryptoType type=1;
+
+	bytes key=2;
+}
+
+message Signature{
+	
+	CryptoType type=1;
+	bytes r=2;
+	bytes s=3;
+
+}
