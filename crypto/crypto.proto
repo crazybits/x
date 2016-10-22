@@ -15,7 +15,7 @@ message PublicKey{
 	bytes key=2;
 }
 
-message Privatekey{
+message PrivateKey{
 	
 	CryptoType type=1;
 

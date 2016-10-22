@@ -12,7 +12,7 @@ func NewOperation(opType OperationType, payload []byte) *Operation {
 	return op
 }
 
-//Bytes get the bytes of the operation
+//Encode get the bytes of the operation
 func (operation *Operation) Encode() ([]byte, error) {
 
 	data, err := proto.Marshal(operation)
@@ -22,7 +22,7 @@ func (operation *Operation) Encode() ([]byte, error) {
 	return data, nil
 }
 
-//Bytes get the bytes of the operation
+//Decode get the bytes of the operation
 func (operation *Operation) Decode(data []byte) error {
 
 	err := proto.Unmarshal(data, operation)

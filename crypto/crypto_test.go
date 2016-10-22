@@ -292,23 +292,3 @@ func TestHexStringToPrivateKey(t *testing.T) {
 	fmt.Println(common.BytesToHexString(key))
 	fmt.Println(common.BytesToHexString(genekey))
 }
-
-func TestSelfDefinedAESEncryptAndDecrypt(t *testing.T) {
-
-	password := "crzybit"
-	plainText := common.StrToSha512("crazybit")
-
-	cipherText := Encrypt(password, plainText)
-
-	fmt.Println("before encrypt:", common.BytesToHexSting(plainText))
-	fmt.Println("after  encrypt:", common.BytesToHexSting(cipherText))
-
-	decryptText := Decrypt(password, cipherText)
-
-	fmt.Println("after  decrypt:", common.BytesToHexSting(decryptText))
-
-	if !bytes.Equal(plainText, decryptText) {
-		t.Fail()
-	}
-
-}

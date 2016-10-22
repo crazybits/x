@@ -3,8 +3,8 @@ syntax = "proto3";
 package blockchain;
 
 import "google/protobuf/timestamp.proto";
-import "github.com/crazybits/x/crypto";
 
+import "crypto.protos";
 
 message Block{
 
@@ -20,6 +20,7 @@ message BlockHeader{
 	bytes prevHash=4;
 	bytes currHash=5;
 	Signature signature=6;
+	PublicKey signee
 }
 
 message Transaction{
