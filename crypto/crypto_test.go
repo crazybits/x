@@ -48,7 +48,6 @@ func TestSignAndVerify(t *testing.T) {
 
 	}
 
-	fmt.Println(hex.EncodeToString(pri.Serialize()), "private key serialize bytes length=", len(pri.Serialize()))
 	fmt.Println(hex.EncodeToString(pub.SerializeCompressed()), "compressed public key bytes length=", len(pub.SerializeCompressed()))
 	fmt.Println(hex.EncodeToString(pub.SerializeUncompressed()), "uncompressed public bytes key length=", len(pub.SerializeUncompressed()))
 	fmt.Println(hex.EncodeToString(sign.Serialize()), "uncompacted signature bytes length=", len(sign.Serialize()))
@@ -83,10 +82,6 @@ func TestAESEncryptAndDecrypt(t *testing.T) {
 
 	mode.CryptBlocks(cipherText[aes.BlockSize:], plainText)
 
-	fmt.Println("before encrypt:", common.BytesToHexSting(plainText))
-
-	fmt.Println(" after encrypt:", common.BytesToHexSting(cipherText))
-
 	iv2 := cipherText[:aes.BlockSize]
 
 	if len(cipherText)%aes.BlockSize != 0 {
@@ -97,8 +92,6 @@ func TestAESEncryptAndDecrypt(t *testing.T) {
 
 	decryptedText := make([]byte, len(cipherText)-aes.BlockSize)
 	mode2.CryptBlocks(decryptedText, cipherText[aes.BlockSize:])
-
-	fmt.Println(" after decrypt:", common.BytesToHexSting(decryptedText))
 
 	if !bytes.Equal(plainText, decryptedText) {
 		t.Fail()
@@ -117,11 +110,7 @@ func TestECCEncrypAndDecrypt(t *testing.T) {
 
 	plaintex := common.StrToSha512("crazybit")
 
-	fmt.Println("before encrypt:", hex.EncodeToString(plaintex))
-
 	encryptedtext, err := secp256k1.Encrypt(pub, plaintex)
-
-	fmt.Println(" after encrypt:", hex.EncodeToString(encryptedtext))
 
 	if err != nil {
 		t.Fail()
@@ -129,13 +118,11 @@ func TestECCEncrypAndDecrypt(t *testing.T) {
 
 	dectext, err := secp256k1.Decrypt(pri, encryptedtext)
 
-	fmt.Println(" after decrypt :", hex.EncodeToString(dectext))
-
 	if err != nil {
 		t.Fail()
 	}
 
-	if bytes.Compare(plaintex, plaintex) != 0 {
+	if bytes.Compare(plaintex, dectext) != 0 {
 		t.Fail()
 	}
 
@@ -160,9 +147,6 @@ func TestGenerateSharedSecret(t *testing.T) {
 	sec1 := secp256k1.GenerateSharedSecret(pri, pri2.PubKey())
 
 	sec2 := secp256k1.GenerateSharedSecret(pri2, pri.PubKey())
-
-	fmt.Println(hex.EncodeToString(sec1), "shared secure bytes length=", len(sec1))
-	fmt.Println(hex.EncodeToString(sec2), "shared secure bytes length=", len(sec1))
 
 	if !bytes.Equal(sec1, sec2) {
 
@@ -270,10 +254,6 @@ func TestSecp256k1AndEllipticSerilizationDifferent(t *testing.T) {
 		t.Fail()
 	}
 
-	fmt.Println(common.BytesToHexString(bytes))
-
-	fmt.Println(PublicKeyToHexString(pub))
-
 }
 
 func TestHexStringToPrivateKey(t *testing.T) {
@@ -288,7 +268,4 @@ func TestHexStringToPrivateKey(t *testing.T) {
 
 		t.Fail()
 	}
-
-	fmt.Println(common.BytesToHexString(key))
-	fmt.Println(common.BytesToHexString(genekey))
 }

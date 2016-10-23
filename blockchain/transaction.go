@@ -1,15 +1,16 @@
-package protos
+package blockchain
 
 import (
 	"errors"
 	"fmt"
 
 	"github.com/crazybits/x/common"
+	"github.com/crazybits/x/crypto"
 	proto "github.com/golang/protobuf/proto"
 )
 
 //NewTransaction create a new transaction
-func NewTransaction(operations []*Operation, signatures []*Signature) *Transaction {
+func NewTransaction(operations []*Operation, signatures []*crypto.Signature) *Transaction {
 
 	tx := Transaction{Operations: operations, Signatures: signatures}
 	return &tx
@@ -61,7 +62,7 @@ func (transaction *Transaction) Decode(data []byte) error {
 }
 
 //Digest get the transaction digest
-func (transaction *Transaction) Digest() ([]byte, errr) {
+func (transaction *Transaction) Digest() ([]byte, error) {
 
 	data, err := transaction.Encode()
 

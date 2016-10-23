@@ -4,7 +4,7 @@ package blockchain;
 
 import "google/protobuf/timestamp.proto";
 
-import "crypto.protos";
+import "github.com/crazybits/x/crypto/crypto.proto";
 
 message Block{
 
@@ -19,14 +19,14 @@ message BlockHeader{
 	bytes nance=3;
 	bytes prevHash=4;
 	bytes currHash=5;
-	Signature signature=6;
-	PublicKey signee
+	crypto.Signature signature=6;
+	crypto.PublicKey signee=7;
 }
 
 message Transaction{
 
 	repeated Operation operations=1;
-	repeated Signature signatures=2;
+	repeated crypto.Signature signatures=2;
 }
 
 enum OperationType{

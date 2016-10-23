@@ -41,6 +41,7 @@ func (privateKey *PrivateKey) PublicKey() *PublicKey {
 	return &PublicKey{Key: pub.SerializeCompressed(), Type: CryptoType_ECDSA}
 }
 
+//GenerateSharedSecret generate shared secret between self private key and target public key
 func (privateKey *PrivateKey) GenerateSharedSecret(publicKey *PublicKey) []byte {
 
 	pri, _ := secp256k1.PrivKeyFromBytes(secp256k1.S256(), privateKey.Key)

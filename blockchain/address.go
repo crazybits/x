@@ -1,14 +1,16 @@
-package protos
+package blockchain
 
 import (
 	"encoding/hex"
 	"math/big"
+
+	"github.com/crazybits/x/crypto"
 )
 
-func StringToAddress(s string) *Address         { return BytesToAddress([]byte(s)) }
-func BigToAddress(b *big.Int) *Address          { return BytesToAddress(b.Bytes()) }
-func HexToAddress(s string) *Address            { return BytesToAddress(FromHex(s)) }
-func PublicKeyToAddress(key PublicKey) *Address { return BytesToAddress(key.key) }
+func StringToAddress(s string) *Address                { return BytesToAddress([]byte(s)) }
+func BigToAddress(b *big.Int) *Address                 { return BytesToAddress(b.Bytes()) }
+func HexToAddress(s string) *Address                   { return BytesToAddress(FromHex(s)) }
+func PublicKeyToAddress(key crypto.PublicKey) *Address { return BytesToAddress(key.Key) }
 
 //BytesToAddress set bytes to the address
 func BytesToAddress(b []byte) *Address {

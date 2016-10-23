@@ -1,14 +1,15 @@
-package protos
+package blockchain
 
 import (
 	"errors"
 
+	"github.com/crazybits/x/crypto"
 	proto "github.com/golang/protobuf/proto"
 	google "github.com/golang/protobuf/ptypes/timestamp"
 )
 
 //NewBlockHeader create block header
-func NewBlockHeader(time *google.Timestamp, number int64, nance []byte, currentHash []byte, prevHash []byte, signature *Signature) *BlockHeader {
+func NewBlockHeader(time *google.Timestamp, number int64, nance []byte, currentHash []byte, prevHash []byte, signature *crypto.Signature) *BlockHeader {
 
 	h := BlockHeader{Time: time, Number: number, Nance: nance, CurrHash: currentHash, PrevHash: prevHash, Signature: signature}
 	return &h

@@ -1,4 +1,4 @@
-package protos
+package blockchain
 
 import (
 	"errors"
@@ -35,11 +35,11 @@ func (block *Block) Decode(data []byte) error {
 }
 
 //Digest get the block digest
-func (block *Block) Digest() ([]byte, errr) {
+func (block *Block) Digest() ([]byte, error) {
 
 	data, err := block.Encode()
 	if err != nil {
-		return errors.New("unable to get the digest of the block")
+		return nil, errors.New("unable to get the digest of the block")
 	}
 
 	digest := common.Sha256(data)
