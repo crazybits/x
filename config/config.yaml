@@ -2,3 +2,8 @@ Peer:
     privateKey:
 cli:
     address:
+
+blockchain:
+          dbPath: "blockchain"
+          cache: 16
+          handle: 16

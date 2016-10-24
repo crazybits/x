@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/crazybits/go_sample/common"
+	"github.com/crazybits/x/common"
 )
 
 func TestLevelDB(t *testing.T) {

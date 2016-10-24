@@ -37,7 +37,7 @@ enum OperationType{
 
 message Operation{
 
-	OperationType opType=1;
+	OperationType type=1;
 	bytes payload=2;
 
 }
@@ -63,6 +63,13 @@ message Address{
 	bytes addressByte=1;
 }
 
+message BlockchainInfo {
+
+    uint64 height = 1;
+    bytes currentBlockHash = 2;
+    bytes previousBlockHash = 3;
+
+}
 
 
 

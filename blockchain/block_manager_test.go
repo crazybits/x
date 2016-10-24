@@ -1,6 +1,10 @@
 package blockchain
 
-import "testing"
+import (
+	"fmt"
+	"reflect"
+	"testing"
+)
 
 func TestBlock(t *testing.T) {
 
@@ -10,21 +14,45 @@ func TestBlock(t *testing.T) {
 
 	withdrawAmount := int64(1024)
 
-	depositOp := NewDepositOperation(receiver, withdrawAmount, withdrawSymbol)
+	depositOp := NewDepositOperation()
+	depositOp.Receiver = receiver
+	depositOp.Symbol = withdrawSymbol
+	depositOp.Amount = withdrawAmount
 
 	data, _ := depositOp.Encode()
 
-	operation := &Operation{OpType: OperationType_Deposit, Payload: data}
+	op := NewOperation()
+	op.Type = OperationType_Deposit
+	op.Payload = data
 
-	transaction := &Transaction{}
-	transaction.AddOperation(operation)
+	tx := NewTransaction()
+	tx.AddOperation(op)
 
-	block := &Block{}
+	block := NewBlock()
 
-	block.AddTransaction(transaction)
+	block.AddTransaction(tx)
+
+	bm := NewBlockManager()
+
+	bm.ProcessBlock(block)
+
+	id, err := block.Digest()
+	if err != nil {
+		t.Fail()
+	}
+	bm.PushBlock(block)
+
+	newBlock := bm.GetBlockByID(id)
+
+	if !reflect.DeepEqual(block, newBlock) {
+		t.Fail()
+	}
+
+}
+func TestBlockchainInfo(t *testing.T) {
 
 	bc := NewBlockManager()
-
-	bc.ProcessBlock(block)
+	blockchainInfo := bc.GetBlockchainInfo()
+	fmt.Println(blockchainInfo)
 
 }

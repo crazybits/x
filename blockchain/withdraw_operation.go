@@ -2,13 +2,14 @@ package blockchain
 
 import (
 	"errors"
+	"fmt"
 
 	proto "github.com/golang/protobuf/proto"
 )
 
 //NewWithdrawOperation create a new withdraw operation
-func NewWithdrawOperation(sender *Address, amount int64, symbol string) *WithdrawOperation {
-	withdrawOp := &WithdrawOperation{Sender: sender, Amount: amount, Symbol: symbol}
+func NewWithdrawOperation() *WithdrawOperation {
+	withdrawOp := new(WithdrawOperation)
 	return withdrawOp
 }
 
@@ -30,4 +31,10 @@ func (withdrawOperation *WithdrawOperation) Decode(data []byte) error {
 		return errors.New("unable to decode the withdraw operation")
 	}
 	return nil
+}
+
+func (withdrawOperation *WithdrawOperation) Evaluate() bool {
+	fmt.Println("WithdrawOperation Evaluate")
+	return true //TODO impmentation
+
 }

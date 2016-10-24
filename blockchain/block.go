@@ -8,9 +8,8 @@ import (
 )
 
 //NewBlock create a block
-func NewBlock(header *BlockHeader, transactions []*Transaction) *Block {
-	block := Block{Header: header, Transactions: transactions}
-	return &block
+func NewBlock() *Block {
+	return new(Block)
 
 }
 
@@ -52,6 +51,6 @@ func (block *Block) AddTransaction(tx *Transaction) {
 
 	transactions := block.GetTransactions()
 
-	transactions = append(transactions, tx)
+	block.Transactions = append(transactions, tx)
 
 }

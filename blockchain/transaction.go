@@ -2,39 +2,41 @@ package blockchain
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/crazybits/x/common"
 	"github.com/crazybits/x/crypto"
 	proto "github.com/golang/protobuf/proto"
 )
 
-//NewTransaction create a new transaction
-func NewTransaction(operations []*Operation, signatures []*crypto.Signature) *Transaction {
+// //NewTransaction create a new transaction
+// func NewTransaction(operations []*Operation, signatures []*crypto.Signature) *Transaction {
 
-	tx := Transaction{Operations: operations, Signatures: signatures}
-	return &tx
+// 	tx := Transaction{Operations: operations, Signatures: signatures}
+// 	return &tx
 
+// }
+
+func NewTransaction() *Transaction {
+
+	tx := new(Transaction)
+	tx.Operations = make([]*Operation, 0)
+	tx.Signatures = make([]*crypto.Signature, 0)
+
+	return tx
 }
 
 //AddOperation add operation to the transaction
 func (transaction *Transaction) AddOperation(operation *Operation) {
 
 	operations := transaction.GetOperations()
-	operations = append(operations, operation)
+	transaction.Operations = append(operations, operation)
 }
 
-//Validate validae the transaction
-func (transaction *Transaction) Validate() bool {
+//AddOperation add signature to the transaction
+func (transaction *Transaction) AddSignature(sign *crypto.Signature) {
 
-	for _, v := range transaction.Operations {
-
-		//TODO implement validation logic
-		fmt.Println(v)
-
-	}
-	return true
-
+	sigs := transaction.GetSignatures()
+	transaction.Signatures = append(sigs, sign)
 }
 
 //Encode get the bytes of the transaction
@@ -73,4 +75,16 @@ func (transaction *Transaction) Digest() ([]byte, error) {
 	digest := common.Sha256(data)
 
 	return digest, nil
+}
+
+func (transaction *Transaction) Evaluate() bool {
+
+	var op IOperation
+
+	for _, op = range transaction.Operations {
+		op.Evaluate()
+	}
+
+	return true
+
 }

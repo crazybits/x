@@ -2,13 +2,18 @@ package blockchain
 
 import (
 	"errors"
+	"fmt"
 
 	proto "github.com/golang/protobuf/proto"
 )
 
+type IOperation interface {
+	Evaluate() bool
+}
+
 //NewOperation create operation
-func NewOperation(opType OperationType, payload []byte) *Operation {
-	op := &Operation{OpType: opType, Payload: payload}
+func NewOperation() *Operation {
+	op := new(Operation)
 	return op
 }
 
@@ -30,4 +35,29 @@ func (operation *Operation) Decode(data []byte) error {
 		return errors.New("unable to encode the operation")
 	}
 	return nil
+}
+func (operation *Operation) Evaluate() bool {
+
+	switch operation.Type {
+
+	case OperationType_Deposit:
+
+		op := &DepositOperation{}
+		op.Decode(operation.Payload)
+		if op.Evaluate() {
+			return true
+		}
+	case OperationType_Withdraw:
+
+		op := &WithdrawOperation{}
+		op.Decode(operation.Payload)
+		if op.Evaluate() {
+			return true
+		}
+	default:
+		fmt.Println("not supported yet")
+
+	}
+	return false
+
 }

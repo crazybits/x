@@ -2,23 +2,18 @@ package db
 
 import (
 	"path/filepath"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/crazybits/x/logger"
-
-	"github.com/crazybits/x/metrics"
-
-	"github.com/golang/glog"
-
+	logging "github.com/op/go-logging"
 	gometrics "github.com/rcrowley/go-metrics"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
+
+var logger = logging.MustGetLogger("db")
 
 var OpenFileLimit = 64
 
@@ -65,7 +60,7 @@ func NewLevelDB(file string, cache int, handles int) (*LevelDB, error) {
 	if handles < 16 {
 		handles = 16
 	}
-	glog.V(logger.Info).Infof("Alloted %dMB cache and %d file handles to %s", cache, handles, file)
+	logger.Debugf("Alloted %dMB cache and %d file handles to %s", cache, handles, file)
 
 	// Open the db and recover any potential corruptions
 	db, err := leveldb.OpenFile(file, &opt.Options{
@@ -146,123 +141,19 @@ func (self *LevelDB) Close() {
 		errc := make(chan error)
 		self.quitChan <- errc
 		if err := <-errc; err != nil {
-			glog.V(logger.Error).Infof("metrics failure in '%s': %v\n", self.fn, err)
+			logger.Infof("metrics failure in '%s': %v\n", self.fn, err)
 		}
 	}
 	err := self.db.Close()
-	if glog.V(logger.Error) {
-		if err == nil {
-			glog.Infoln("closed db:", self.fn)
-		} else {
-			glog.Errorf("error closing db %s: %v", self.fn, err)
-		}
+	if err != nil {
+		logger.Infof("error closing db %s: %v", self.fn, err)
+	} else {
+		logger.Infof("close db:", self.fn)
 	}
 }
 
 func (self *LevelDB) LDB() *leveldb.DB {
 	return self.db
-}
-
-// Meter configures the database metrics collectors and
-func (self *LevelDB) Meter(prefix string) {
-	// Short circuit metering if the metrics system is disabled
-	if !metrics.Enabled {
-		return
-	}
-	// Initialize all the metrics collector at the requested prefix
-	self.getTimer = metrics.NewTimer(prefix + "user/gets")
-	self.putTimer = metrics.NewTimer(prefix + "user/puts")
-	self.delTimer = metrics.NewTimer(prefix + "user/dels")
-	self.missMeter = metrics.NewMeter(prefix + "user/misses")
-	self.readMeter = metrics.NewMeter(prefix + "user/reads")
-	self.writeMeter = metrics.NewMeter(prefix + "user/writes")
-	self.compTimeMeter = metrics.NewMeter(prefix + "compact/time")
-	self.compReadMeter = metrics.NewMeter(prefix + "compact/input")
-	self.compWriteMeter = metrics.NewMeter(prefix + "compact/output")
-
-	// Create a quit channel for the periodic collector and run it
-	self.quitLock.Lock()
-	self.quitChan = make(chan chan error)
-	self.quitLock.Unlock()
-
-	go self.meter(3 * time.Second)
-}
-
-// meter periodically retrieves internal leveldb counters and reports them to
-// the metrics subsystem.
-//
-// This is how a stats table look like (currently):
-//   Compactions
-//    Level |   Tables   |    Size(MB)   |    Time(sec)  |    Read(MB)   |   Write(MB)
-//   -------+------------+---------------+---------------+---------------+---------------
-//      0   |          0 |       0.00000 |       1.27969 |       0.00000 |      12.31098
-//      1   |         85 |     109.27913 |      28.09293 |     213.92493 |     214.26294
-//      2   |        523 |    1000.37159 |       7.26059 |      66.86342 |      66.77884
-//      3   |        570 |    1113.18458 |       0.00000 |       0.00000 |       0.00000
-func (self *LevelDB) meter(refresh time.Duration) {
-	// Create the counters to store current and previous values
-	counters := make([][]float64, 2)
-	for i := 0; i < 2; i++ {
-		counters[i] = make([]float64, 3)
-	}
-	// Iterate ad infinitum and collect the stats
-	for i := 1; ; i++ {
-		// Retrieve the database stats
-		stats, err := self.db.GetProperty("leveldb.stats")
-		if err != nil {
-			glog.V(logger.Error).Infof("failed to read database stats: %v", err)
-			return
-		}
-		// Find the compaction table, skip the header
-		lines := strings.Split(stats, "\n")
-		for len(lines) > 0 && strings.TrimSpace(lines[0]) != "Compactions" {
-			lines = lines[1:]
-		}
-		if len(lines) <= 3 {
-			glog.V(logger.Error).Infof("compaction table not found")
-			return
-		}
-		lines = lines[3:]
-
-		// Iterate over all the table rows, and accumulate the entries
-		for j := 0; j < len(counters[i%2]); j++ {
-			counters[i%2][j] = 0
-		}
-		for _, line := range lines {
-			parts := strings.Split(line, "|")
-			if len(parts) != 6 {
-				break
-			}
-			for idx, counter := range parts[3:] {
-				if value, err := strconv.ParseFloat(strings.TrimSpace(counter), 64); err != nil {
-					glog.V(logger.Error).Infof("compaction entry parsing failed: %v", err)
-					return
-				} else {
-					counters[i%2][idx] += value
-				}
-			}
-		}
-		// Update all the requested meters
-		if self.compTimeMeter != nil {
-			self.compTimeMeter.Mark(int64((counters[i%2][0] - counters[(i-1)%2][0]) * 1000 * 1000 * 1000))
-		}
-		if self.compReadMeter != nil {
-			self.compReadMeter.Mark(int64((counters[i%2][1] - counters[(i-1)%2][1]) * 1024 * 1024))
-		}
-		if self.compWriteMeter != nil {
-			self.compWriteMeter.Mark(int64((counters[i%2][2] - counters[(i-1)%2][2]) * 1024 * 1024))
-		}
-		// Sleep a bit, then repeat the stats collection
-		select {
-		case errc := <-self.quitChan:
-			// Quit requesting, stop hammering the database
-			errc <- nil
-			return
-
-		case <-time.After(refresh):
-			// Timeout, gather a new set of stats
-		}
-	}
 }
 
 // TODO: remove this stuff and expose leveldb directly
