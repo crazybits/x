@@ -146,9 +146,9 @@ func (self *LevelDB) Close() {
 	}
 	err := self.db.Close()
 	if err != nil {
-		logger.Infof("error closing db %s: %v", self.fn, err)
+		logger.Infof("error closing db %s: %s", self.fn, err)
 	} else {
-		logger.Infof("close db:", self.fn)
+		logger.Infof("close db: %s", self.fn)
 	}
 }
 

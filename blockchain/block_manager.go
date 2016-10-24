@@ -45,13 +45,12 @@ func NewBlockManager() *BlockManager {
 
 	once.Do(func() {
 
-		bm := new(BlockManager)
+		bm = new(BlockManager)
 		db, err := db.NewLevelDB(viper.GetString("blockchain.dbPath"), viper.GetInt("blockchain.cache"), viper.GetInt("blockchain.handle"))
 		if err != nil {
 			logger.Errorf("failed to create db", err)
 		}
 		bm.db = db
-
 	})
 
 	return bm
@@ -142,5 +141,10 @@ func (bm *BlockManager) ProccessTransaction(tx *Transaction, lockChan chan bool)
 	lockChan <- true
 
 	return
+
+}
+
+func (bm *BlockManager) ShutDown() {
+	bm.db.Close()
 
 }

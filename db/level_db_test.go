@@ -60,6 +60,8 @@ func TestGetPersistedData(t *testing.T) {
 
 func TestInputBigData(t *testing.T) {
 
+	t.Skip("skip case")
+
 	ldb, _ := NewLevelDB("crazybit", 16, 16)
 
 	defer ldb.Close()
@@ -80,6 +82,7 @@ func TestInputBigData(t *testing.T) {
 }
 
 func TestInputBigDataWithBatch(t *testing.T) {
+	t.Skip("skip case")
 
 	ldb, _ := NewLevelDB("crazybit", 16, 16)
 

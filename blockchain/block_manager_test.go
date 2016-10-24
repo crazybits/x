@@ -8,21 +8,21 @@ import (
 
 func TestBlock(t *testing.T) {
 
-	receiver := StringToAddress("crazybit")
+	sneder := StringToAddress("crazybit")
 
 	withdrawSymbol := "Symbol"
 
 	withdrawAmount := int64(1024)
 
-	depositOp := NewDepositOperation()
-	depositOp.Receiver = receiver
-	depositOp.Symbol = withdrawSymbol
-	depositOp.Amount = withdrawAmount
+	withdrawOp := NewWithdrawOperation()
+	withdrawOp.Sender = sneder
+	withdrawOp.Symbol = withdrawSymbol
+	withdrawOp.Amount = withdrawAmount
 
-	data, _ := depositOp.Encode()
+	data, _ := withdrawOp.Encode()
 
 	op := NewOperation()
-	op.Type = OperationType_Deposit
+	op.Type = OperationType_Withdraw
 	op.Payload = data
 
 	tx := NewTransaction()
@@ -37,6 +37,7 @@ func TestBlock(t *testing.T) {
 	bm.ProcessBlock(block)
 
 	id, err := block.Digest()
+
 	if err != nil {
 		t.Fail()
 	}
@@ -47,12 +48,21 @@ func TestBlock(t *testing.T) {
 	if !reflect.DeepEqual(block, newBlock) {
 		t.Fail()
 	}
-
 }
 func TestBlockchainInfo(t *testing.T) {
 
+	//t.Skip("skip this case")
 	bc := NewBlockManager()
+
+	/*bci := NewBlockchainInfo()
+	bci.CurrentBlockHash = common.StrToSha256("cazybit")
+	bci.PreviousBlockHash = common.StrToSha256("crazybits")
+	bci.Height = 1024
+
+	bc.UpdateBlockchainInfo(bci)*/
 	blockchainInfo := bc.GetBlockchainInfo()
-	fmt.Println(blockchainInfo)
+	fmt.Println(blockchainInfo.Height)
+
+	bm.ShutDown()
 
 }

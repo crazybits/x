@@ -45,6 +45,7 @@ func TestBlockEncode(t *testing.T) {
 	fmt.Println(blockNew)
 
 	if !reflect.DeepEqual(block, blockNew) {
+
 		t.Fail()
 	}
 
