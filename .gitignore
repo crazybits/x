@@ -10,4 +10,5 @@ bin
 Godeps
 *.exe
 *.log
+vscode
 
