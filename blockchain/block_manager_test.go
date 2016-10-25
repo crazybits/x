@@ -1,9 +1,10 @@
 package blockchain
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
+
+	"github.com/crazybits/x/common"
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestBlock(t *testing.T) {
@@ -45,23 +46,24 @@ func TestBlock(t *testing.T) {
 
 	newBlock := bm.GetBlockByID(id)
 
-	if !reflect.DeepEqual(block, newBlock) {
+	if diff := pretty.Compare(block, newBlock); diff != "" {
 		t.Fail()
 	}
 }
 func TestBlockchainInfo(t *testing.T) {
 
-	//t.Skip("skip this case")
 	bc := NewBlockManager()
 
-	/*bci := NewBlockchainInfo()
+	bci := NewBlockchainInfo()
 	bci.CurrentBlockHash = common.StrToSha256("cazybit")
 	bci.PreviousBlockHash = common.StrToSha256("crazybits")
 	bci.Height = 1024
 
-	bc.UpdateBlockchainInfo(bci)*/
+	bc.UpdateBlockchainInfo(bci)
 	blockchainInfo := bc.GetBlockchainInfo()
-	fmt.Println(blockchainInfo.Height)
+	if diff := pretty.Compare(bci, blockchainInfo); diff != "" {
+		t.Fail()
+	}
 
 	bm.ShutDown()
 

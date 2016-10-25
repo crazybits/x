@@ -1,9 +1,9 @@
 package blockchain
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
+
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestBlockEncode(t *testing.T) {
@@ -27,7 +27,6 @@ func TestBlockEncode(t *testing.T) {
 
 	tx := NewTransaction()
 	tx.AddOperation(op)
-	tx.AddOperation(op)
 
 	block := NewBlock()
 
@@ -41,12 +40,7 @@ func TestBlockEncode(t *testing.T) {
 		t.Fail()
 	}
 
-	fmt.Println(block)
-	fmt.Println(blockNew)
-
-	if !reflect.DeepEqual(block, blockNew) {
-
+	if diff := pretty.Compare(block, blockNew); diff != "" {
 		t.Fail()
 	}
-
 }

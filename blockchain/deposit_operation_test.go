@@ -48,7 +48,7 @@ func TestDepositOperations(t *testing.T) {
 		t.Fail()
 	}
 
-	op2 := &DepositOperation{}
+	op2 := NewDepositOperation()
 
 	op2.Decode(data)
 

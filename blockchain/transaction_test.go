@@ -1,7 +1,6 @@
 package blockchain
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -106,24 +105,13 @@ func TestTransactionEvaluate(t *testing.T) {
 	op1.Type = OperationType_Deposit
 	op1.Payload = depositPayload
 
-	fmt.Println(op1)
-	/*	op2 := NewOperation()
-		op2.Type = OperationType_Deposit
-		op2.Payload = depositPayload
-		fmt.Println(op2)*/
-	op3 := NewOperation()
-	op3.Type = OperationType_Withdraw
-	op3.Payload = withdrawPayload
-
-	fmt.Println(op1)
-	/*	fmt.Println(op2)*/
-	fmt.Println(op3)
+	op2 := NewOperation()
+	op2.Type = OperationType_Withdraw
+	op2.Payload = withdrawPayload
 
 	transaction := NewTransaction()
-
 	transaction.AddOperation(op1)
-	/*	transaction.AddOperation(op2)*/
-	transaction.AddOperation(op3)
+	transaction.AddOperation(op2)
 
 	transaction.Evaluate()
 

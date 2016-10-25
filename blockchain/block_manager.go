@@ -44,7 +44,6 @@ type BlockManager struct {
 func NewBlockManager() *BlockManager {
 
 	once.Do(func() {
-
 		bm = new(BlockManager)
 		db, err := db.NewLevelDB(viper.GetString("blockchain.dbPath"), viper.GetInt("blockchain.cache"), viper.GetInt("blockchain.handle"))
 		if err != nil {
@@ -52,7 +51,6 @@ func NewBlockManager() *BlockManager {
 		}
 		bm.db = db
 	})
-
 	return bm
 }
 
