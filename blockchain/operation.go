@@ -8,7 +8,7 @@ import (
 )
 
 type IOperation interface {
-	Evaluate() bool
+	Evaluate(state *State) bool
 }
 
 //NewOperation create operation
@@ -36,7 +36,7 @@ func (operation *Operation) Decode(data []byte) error {
 	}
 	return nil
 }
-func (operation *Operation) Evaluate() bool {
+func (operation *Operation) Evaluate(state *State) bool {
 
 	switch operation.Type {
 
@@ -44,14 +44,14 @@ func (operation *Operation) Evaluate() bool {
 
 		op := &DepositOperation{}
 		op.Decode(operation.Payload)
-		if op.Evaluate() {
+		if op.Evaluate(state) {
 			return true
 		}
 	case OperationType_Withdraw:
 
 		op := &WithdrawOperation{}
 		op.Decode(operation.Payload)
-		if op.Evaluate() {
+		if op.Evaluate(state) {
 			return true
 		}
 	default:

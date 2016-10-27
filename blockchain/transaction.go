@@ -77,12 +77,12 @@ func (transaction *Transaction) Digest() ([]byte, error) {
 	return digest, nil
 }
 
-func (transaction *Transaction) Evaluate() bool {
+func (transaction *Transaction) Evaluate(state *State) bool {
 
-	var op IOperation
-
-	for _, op = range transaction.Operations {
-		op.Evaluate()
+	for _, op := range transaction.Operations {
+		if !op.Evaluate(state) {
+			return false
+		}
 	}
 
 	return true

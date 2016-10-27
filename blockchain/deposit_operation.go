@@ -32,7 +32,7 @@ func (depositOperation *DepositOperation) Decode(data []byte) error {
 	return nil
 }
 
-func (depositOperation *DepositOperation) Evaluate() bool {
+func (depositOperation *DepositOperation) Evaluate(state *State) bool {
 
 	fmt.Println("DepositOperation Evaluate")
 	return true //TODO impmentation

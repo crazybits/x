@@ -113,6 +113,8 @@ func TestTransactionEvaluate(t *testing.T) {
 	transaction.AddOperation(op1)
 	transaction.AddOperation(op2)
 
-	transaction.Evaluate()
+	state := NewState()
+
+	transaction.Evaluate(state)
 
 }

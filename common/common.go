@@ -1,7 +1,9 @@
 package common
 
 import (
+	"bytes"
 	"crypto/rand"
+	"encoding/binary"
 	"encoding/hex"
 	"math/big"
 	"path/filepath"
@@ -49,4 +51,21 @@ func BytesToBig(data []byte) *big.Int {
 func BytesToHexString(bytes []byte) string {
 
 	return hex.EncodeToString(bytes)
+}
+
+func BytesToInt64(data []byte) int64 {
+
+	bytesBuffer := bytes.NewBuffer(data)
+
+	var value int64
+	binary.Read(bytesBuffer, binary.BigEndian, &value)
+	return value
+
+}
+func Int64ToBytes(data int64) []byte {
+
+	bytesBuffer := bytes.NewBuffer([]byte{})
+	binary.Write(bytesBuffer, binary.BigEndian, data)
+	return bytesBuffer.Bytes()
+
 }

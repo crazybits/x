@@ -34,6 +34,7 @@ enum OperationType{
 	UNDEFINED=0;
 	Deposit=1;
 	Withdraw=2;
+	Transfer=3;
 }
 
 message Operation{
@@ -58,10 +59,24 @@ message WithdrawOperation{
 	string symbol=3;
 }
 
+message TransferOperation{
+	
+	Address sender=1;
+	Address receiver=2;
+	string symbo=3;
+	int64 amount=4;
+}
+
 
 message Address{
 	
 	bytes addressByte=1;
+}
+
+message Account{
+	
+	string name=1;
+	crypto.PublicKey pubicKey=2;
 }
 
 message BlockchainInfo {

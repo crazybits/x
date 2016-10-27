@@ -33,7 +33,7 @@ func (withdrawOperation *WithdrawOperation) Decode(data []byte) error {
 	return nil
 }
 
-func (withdrawOperation *WithdrawOperation) Evaluate() bool {
+func (withdrawOperation *WithdrawOperation) Evaluate(state *State) bool {
 	fmt.Println("WithdrawOperation Evaluate")
 	return true //TODO impmentation
 
