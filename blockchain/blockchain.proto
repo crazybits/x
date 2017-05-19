@@ -3,8 +3,8 @@ syntax = "proto3";
 package blockchain;
 
 import "google/protobuf/timestamp.proto";
-import "github.com/crazybits/x/crypto";
 
+import "github.com/crazybits/x/crypto/crypto.proto";
 
 message Block{
 
@@ -19,24 +19,27 @@ message BlockHeader{
 	bytes nance=3;
 	bytes prevHash=4;
 	bytes currHash=5;
-	Signature signature=6;
+	crypto.Signature signature=6;
+	crypto.PublicKey signee=7;
 }
 
 message Transaction{
 
 	repeated Operation operations=1;
-	repeated Signature signatures=2;
+	repeated crypto.Signature signatures=2;
 }
 
 enum OperationType{
-	
-	Deposit=0;
-	Withdraw=1;
+
+	UNDEFINED=0;
+	Deposit=1;
+	Withdraw=2;
+	Transfer=3;
 }
 
 message Operation{
 
-	OperationType opType=1;
+	OperationType type=1;
 	bytes payload=2;
 
 }
@@ -56,12 +59,33 @@ message WithdrawOperation{
 	string symbol=3;
 }
 
+message TransferOperation{
+	
+	Address sender=1;
+	Address receiver=2;
+	string symbo=3;
+	int64 amount=4;
+}
+
 
 message Address{
 	
 	bytes addressByte=1;
 }
 
+message Account{
+	
+	string name=1;
+	crypto.PublicKey pubicKey=2;
+}
+
+message BlockchainInfo {
+
+    uint64 height = 1;
+    bytes currentBlockHash = 2;
+    bytes previousBlockHash = 3;
+
+}
 
 
 

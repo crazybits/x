@@ -14,8 +14,53 @@
 
 package main
 
-import "github.com/crazybits/x/cmd"
+import (
+	"reflect"
+
+	. "github.com/crazybits/x/blockchain"
+	"github.com/crazybits/x/cmd"
+)
 
 func main() {
 	cmd.Execute()
+
+	receiver := StringToAddress("crazybit")
+
+	withdrawSymbol := "Symbol"
+
+	withdrawAmount := int64(1024)
+
+	depositOp := NewDepositOperation()
+	depositOp.Receiver = receiver
+	depositOp.Symbol = withdrawSymbol
+	depositOp.Amount = withdrawAmount
+
+	data, _ := depositOp.Encode()
+
+	op := NewOperation()
+	op.Type = OperationType_Deposit
+	op.Payload = data
+
+	tx := NewTransaction()
+	tx.AddOperation(op)
+
+	block := NewBlock()
+
+	block.AddTransaction(tx)
+
+	bm := NewBlockManager()
+
+	bm.ProcessBlock(block)
+
+	id, err := block.Digest()
+	if err != nil {
+
+	}
+	bm.PushBlock(block)
+
+	newBlock := bm.GetBlockByID(id)
+
+	if !reflect.DeepEqual(block, newBlock) {
+
+	}
 }

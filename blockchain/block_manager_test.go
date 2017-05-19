@@ -1,30 +1,70 @@
 package blockchain
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/crazybits/x/common"
+	"github.com/kylelemons/godebug/pretty"
+)
 
 func TestBlock(t *testing.T) {
 
-	receiver := StringToAddress("crazybit")
+	sneder := StringToAddress("crazybit")
 
 	withdrawSymbol := "Symbol"
 
 	withdrawAmount := int64(1024)
 
-	depositOp := NewDepositOperation(receiver, withdrawAmount, withdrawSymbol)
+	withdrawOp := NewWithdrawOperation()
+	withdrawOp.Sender = sneder
+	withdrawOp.Symbol = withdrawSymbol
+	withdrawOp.Amount = withdrawAmount
 
-	data, _ := depositOp.Encode()
+	data, _ := withdrawOp.Encode()
 
-	operation := &Operation{OpType: OperationType_Deposit, Payload: data}
+	op := NewOperation()
+	op.Type = OperationType_Withdraw
+	op.Payload = data
 
-	transaction := &Transaction{}
-	transaction.AddOperation(operation)
+	tx := NewTransaction()
+	tx.AddOperation(op)
 
-	block := &Block{}
+	block := NewBlock()
 
-	block.AddTransaction(transaction)
+	block.AddTransaction(tx)
+
+	bm := NewBlockManager()
+
+	bm.ProcessBlock(block)
+
+	id, err := block.Digest()
+
+	if err != nil {
+		t.Fail()
+	}
+	bm.PushBlock(block)
+
+	newBlock := bm.GetBlockByID(id)
+
+	if diff := pretty.Compare(block, newBlock); diff != "" {
+		t.Fail()
+	}
+}
+func TestBlockchainInfo(t *testing.T) {
 
 	bc := NewBlockManager()
 
-	bc.ProcessBlock(block)
+	bci := NewBlockchainInfo()
+	bci.CurrentBlockHash = common.StrToSha256("cazybit")
+	bci.PreviousBlockHash = common.StrToSha256("crazybits")
+	bci.Height = 1024
+
+	bc.UpdateBlockchainInfo(bci)
+	blockchainInfo := bc.GetBlockchainInfo()
+	if diff := pretty.Compare(bci, blockchainInfo); diff != "" {
+		t.Fail()
+	}
+
+	bm.ShutDown()
 
 }

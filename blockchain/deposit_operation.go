@@ -1,16 +1,18 @@
-package protos
+package blockchain
 
 import (
 	"errors"
+	"fmt"
 
 	proto "github.com/golang/protobuf/proto"
 )
 
-func NewDepositOperation(receiver *Address, amount int64, symbol string) *DepositOperation {
-	depositOp := &DepositOperation{Receiver: receiver, Amount: amount, Symbol: symbol}
-	return depositOp
+//NewDepositOperation create a new deposit operation
+func NewDepositOperation() *DepositOperation {
+	return new(DepositOperation)
 }
 
+//Encode serilize the deposit operation to bytes
 func (depositOperation *DepositOperation) Encode() ([]byte, error) {
 
 	data, err := proto.Marshal(depositOperation)
@@ -20,6 +22,7 @@ func (depositOperation *DepositOperation) Encode() ([]byte, error) {
 	return data, nil
 }
 
+//Decode unserilize the deposit operation from the provided bytes
 func (depositOperation *DepositOperation) Decode(data []byte) error {
 
 	err := proto.Unmarshal(data, depositOperation)
@@ -27,4 +30,11 @@ func (depositOperation *DepositOperation) Decode(data []byte) error {
 		return errors.New("unable to decode the deposit operation")
 	}
 	return nil
+}
+
+func (depositOperation *DepositOperation) Evaluate(state *State) bool {
+
+	fmt.Println("DepositOperation Evaluate")
+	return true //TODO impmentation
+
 }

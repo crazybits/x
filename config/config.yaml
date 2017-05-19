@@ -2,3 +2,10 @@ Peer:
     privateKey:
 cli:
     address:
+
+blockchain:
+          databases:
+                    blockchainDBPath:  "chain/block"
+                    balanceDBPath:      "chain/balance"
+                    cache: 16
+                    handle: 16
